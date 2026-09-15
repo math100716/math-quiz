@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="RnX5lrkRO3yDqOum1sJqSV">
+<head data-page-node-id="MiK2DKOPRSTiddPhn0nDGY">
+<meta charset="UTF-8" data-page-node-id="OC7fHefaFP6235h61VCJtT" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="yjjbHb4bXh2RqcDbUUFCuh" />
+<title>随机抽题 · 数学题库</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --ink: #1f2937;
+    --ink-2: #4b5563;
+    --ink-3: #9ca3af;
+    --line: #e5e7eb;
+    --brand: #2563eb;
+    --brand-soft: #eff6ff;
+    --green: #059669;
+    --green-soft: #ecfdf5;
+    --amber: #d97706;
+    --amber-soft: #fffbeb;
+    --shadow: 0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.06);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.7; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  header { margin-bottom: 24px; }
+  .crumb { font-size: 13px; color: var(--ink-3); }
+  h1 { font-size: 26px; margin: 6px 0 4px; font-weight: 650; letter-spacing: -.01em; }
+  .sub { color: var(--ink-2); font-size: 14px; }
+  .sub b { color: var(--ink); font-weight: 600; }
+
+  .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 22px 0 16px; }
+  button {
+    font: inherit; cursor: pointer; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--card); color: var(--ink); padding: 9px 16px; font-size: 14px; transition: .15s ease;
+  }
+  button:hover { border-color: #cbd5e1; background: #fafbfc; }
+  button:active { transform: translateY(1px); }
+  button.primary {
+    background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 600;
+    box-shadow: 0 6px 16px rgba(37,99,235,.22);
+  }
+  button.primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+  button.ghost { color: var(--ink-2); }
+  .spacer { flex: 1; }
+  .stat { font-size: 13px; color: var(--ink-3); }
+  .stat b { color: var(--ink-2); font-weight: 600; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    box-shadow: none; padding: 28px 30px; min-height: 260px;
+  }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tag { font-size: 16px; padding: 5px 18px; border-radius: 999px; background: #f3f4f6; color: var(--ink-2); border: 1px solid var(--line); }
+  .tag.level-基础 { background: var(--green-soft); color: var(--green); border-color: #a7f3d0; }
+  .tag.level-提升 { background: var(--brand-soft); color: var(--brand); border-color: #bfdbfe; }
+  .tag.level-拓展 { background: var(--amber-soft); color: var(--amber); border-color: #fde68a; }
+  .tag.src { background: #fff; color: var(--ink-3); }
+
+  .stem { font-size: 17px; white-space: pre-wrap; }
+  .figs { margin-top: 14px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .figs .fig {
+    width: min(100%, 340px); height: 240px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .figs img {
+    max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain;
+    border: 0; border-radius: 0; background: transparent;
+    cursor: zoom-in; transition: transform .15s ease;
+  }
+  /* 强制去掉一切可能画在图片模块上的边线（含外部注入的默认样式） */
+  .figs, .figs img {
+    border: 0 !important; outline: none !important;
+    box-shadow: none !important; -webkit-box-shadow: none !important;
+  }
+  .figs img:hover { transform: scale(1.03); }
+  .figs .cap { font-size: 12px; color: var(--ink-3); padding-bottom: 4px; }
+  .optimgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 14px 0; }
+  .optimg { text-align: center; }
+  .optimg img {
+    max-width: 100%; max-height: 190px; width: auto; height: auto;
+    border: 0; background: transparent; cursor: zoom-in; transition: transform .15s ease;
+  }
+  .optimg img:hover { transform: scale(1.03); }
+  .optimg .lb { display: block; font-size: 14px; font-weight: 600; color: var(--ink-2); margin-top: 2px; }
+  sub { font-size: .72em; }
+  #lightbox {
+    position: fixed; inset: 0; z-index: 999; display: none;
+    background: rgba(15,23,42,.78); align-items: center; justify-content: center;
+    padding: 24px; cursor: zoom-out;
+  }
+  #lightbox.on { display: flex; }
+  #lightbox img {
+    max-width: 96vw; max-height: 92vh; background: #fff;
+    border: 0; border-radius: 0; box-shadow: none;
+  }
+  #lightbox .tip {
+    position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+    color: #e2e8f0; font-size: 13px; background: rgba(15,23,42,.6);
+    padding: 5px 14px; border-radius: 999px;
+  }
+  .opts { margin-top: 16px; display: grid; gap: 8px; }
+  .opt { padding: 9px 14px; border: 1px solid var(--line); border-radius: 10px; font-size: 15px; background: #fcfcfd; cursor: pointer; transition: border-color .12s ease, background .12s ease; }
+  .mfrac { display: inline-flex; flex-direction: column; text-align: center; vertical-align: middle; margin: 0 3px; line-height: 1.25; }
+  .mfrac > span { display: block; padding: 0 5px; }
+  .mfrac > .num { border-bottom: 1.5px solid currentColor; }
+  sup { font-size: .72em; }
+  .rad { border-top: 1.5px solid currentColor; padding: 0 2px; }
+  .opt:hover { border-color: #c7d2fe; }
+  /* 点击反馈：不管对错，被点的选项都变成同一个高亮色（不区分对错，学生看不出自己答错了） */
+  .opt.sel {
+    border-color: var(--brand); background: #dbeafe; color: #1d4ed8; font-weight: 600;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.14);
+    animation: pick .26s ease;
+  }
+  @keyframes pick { 0% { transform: scale(1); } 45% { transform: scale(1.03); } 100% { transform: scale(1); } }
+  .opt.correct { border-color: #a7f3d0; background: var(--green-soft); color: var(--green); font-weight: 600; }
+
+  .reveal { margin-top: 22px; border-top: 1px dashed var(--line); padding-top: 18px; }
+  .reveal summary {
+    cursor: pointer; font-size: 14px; color: var(--brand); font-weight: 600; list-style: none;
+    display: inline-flex; align-items: center; gap: 6px; user-select: none;
+  }
+  .reveal summary::-webkit-details-marker { display: none; }
+  .reveal summary::before { content: "▸"; transition: transform .15s; display: inline-block; }
+  .reveal[open] summary::before { transform: rotate(90deg); }
+  .ans-box { margin-top: 14px; font-size: 15px; }
+  .ans-box .row { display: flex; gap: 10px; padding: 8px 0; }
+  .ans-box .k { flex: 0 0 62px; color: var(--ink-3); font-size: 13px; padding-top: 2px; }
+  .ans-box .v { flex: 1; white-space: pre-wrap; }
+  .ans-box .v.strong { font-weight: 700; color: var(--green); }
+  .ans-box .figs .cap { padding-bottom: 4px; }
+
+  .empty { text-align: center; padding: 46px 20px; color: var(--ink-3); }
+  .empty .big { font-size: 34px; margin-bottom: 8px; }
+  .empty code { background: #f3f4f6; padding: 2px 6px; border-radius: 6px; font-size: 13px; color: var(--ink-2); }
+
+  .panel { margin-top: 22px; border: 1px solid var(--line); border-radius: 14px; background: #fff; overflow: hidden; }
+  .panel > summary {
+    cursor: pointer; padding: 13px 20px; font-size: 14px; font-weight: 600; color: var(--ink-2);
+    list-style: none; user-select: none; display: flex; align-items: center; gap: 8px;
+  }
+  .panel > summary::-webkit-details-marker { display: none; }
+  .panel > summary::before { content: "▸"; transition: transform .15s; }
+  .panel[open] > summary::before { transform: rotate(90deg); }
+  .panel-body { padding: 0 20px 20px; }
+  textarea {
+    width: 100%; min-height: 190px; font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    border: 1px solid var(--line); border-radius: 10px; padding: 12px; resize: vertical; color: var(--ink);
+    background: #fcfcfd;
+  }
+  textarea:focus { outline: none; border-color: var(--brand); background: #fff; }
+  .hint { font-size: 12.5px; color: var(--ink-3); margin: 8px 0 12px; }
+  .row-btns { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .msg { font-size: 13px; color: var(--green); min-height: 20px; margin-left: 4px; }
+
+  .history { margin-top: 26px; }
+  .history h2 { font-size: 12px; color: var(--ink-3); font-weight: 600; letter-spacing: .08em; margin: 0 0 10px; }
+  .hist-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-size: 12px; padding: 4px 10px; border-radius: 8px; border: 1px solid var(--line);
+    background: #fff; color: var(--ink-2); cursor: pointer;
+  }
+  .chip:hover { border-color: var(--brand); color: var(--brand); }
+  .chip.now { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+  .flip { animation: flip .32s ease; }
+  @keyframes flip { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* 学生信息 / 积分条 */
+  .userbar {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 18px; padding: 12px 16px; border: 1px solid var(--line);
+    border-radius: 14px; background: var(--card); font-size: 14px;
+  }
+  .userbar .who { font-weight: 650; }
+  .userbar .who small { color: var(--ink-3); font-weight: 400; margin-left: 6px; }
+  .pill {
+    padding: 3px 14px; border-radius: 999px; border: 1px solid var(--line);
+    background: #f8fafc; color: var(--ink-2); font-size: 13.5px;
+  }
+  .pill b { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .pill.score { background: var(--brand-soft); border-color: #bfdbfe; color: var(--brand); }
+  .pill.score b { color: var(--brand); }
+  .pill.streak { background: var(--green-soft); border-color: #a7f3d0; color: var(--green); }
+  .pill.streak b { color: var(--green); }
+  .pill.zero { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+  .pill.zero b { color: #dc2626; }
+  .pop { animation: pop .45s ease; }
+  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.18); } 100% { transform: scale(1); } }
+  .userbar button { padding: 6px 14px; font-size: 13.5px; }
+
+  .opt.ok { border-color: #a7f3d0; background: var(--green-soft); color: var(--green); font-weight: 600; }
+  .opt.no { border-color: #fecaca; background: #fef2f2; color: #dc2626; font-weight: 600; }
+  .opt.lock { cursor: default; }
+  /* ---------- 填空题定制小键盘 ---------- */
+  .blank {
+    display: inline-block; min-width: 64px; padding: 1px 10px 3px; margin: 0 2px;
+    border-bottom: 2px solid var(--brand); border-radius: 4px 4px 0 0;
+    background: var(--brand-soft); color: var(--brand); font-weight: 700;
+    text-align: center; cursor: pointer; transition: background .12s ease;
+    vertical-align: baseline; line-height: 1.5;
+  }
+  .blank:hover { background: #dbeafe; }
+  .blank.sel { border-bottom-color: var(--brand); background: #dbeafe; color: #1d4ed8; }
+  .blank.ok { border-bottom-color: var(--green); background: var(--green-soft); color: var(--green); }
+  .blank.no { border-bottom-color: #dc2626; background: #fef2f2; color: #dc2626; }
+  .blank-hint { font-size: 12px; color: var(--ink-3); margin-left: 6px; }
+  .pad {
+    margin-top: 12px; padding: 12px; border: 1px dashed #bfdbfe; border-radius: 12px;
+    background: #f8fbff; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  .pad .tk {
+    font: inherit; font-size: 16px; min-width: 44px; padding: 8px 12px;
+    border: 1px solid var(--line); border-radius: 9px; background: #fff;
+    cursor: pointer; text-align: center; transition: border-color .12s ease, background .12s ease;
+  }
+  .pad .tk:hover { border-color: var(--brand); background: var(--brand-soft); }
+  .pad .tk.fn { color: var(--ink-2); background: #f3f4f6; }
+  .pad .tk.go { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 600; margin-left: auto; }
+  .pad.locked .tk { cursor: default; opacity: .55; }
+  .pad .ans-reveal { width: 100%; font-size: 14px; font-weight: 600; color: var(--green); }
+  .pad .ans-reveal b { font-size: 16px; }
+
+  #toast {
+    position: fixed; left: 50%; top: 22px; transform: translate(-50%, -14px);
+    padding: 10px 22px; border-radius: 999px; font-size: 15px; font-weight: 650;
+    background: #111827; color: #fff; opacity: 0; pointer-events: none;
+    transition: opacity .22s ease, transform .22s ease; z-index: 900;
+  }
+  #toast.on { opacity: 1; transform: translate(-50%, 0); }
+  #toast.ok { background: var(--green); }
+  #toast.no { background: #dc2626; }
+  footer { margin-top: 34px; font-size: 12px; color: var(--ink-3); text-align: center; }
+</style>
+</head>
+<body data-page-node-id="adB7tsZDFPCMGtGBajYEHw">
+<div class="wrap" data-page-node-id="n0Lpv1jK0A7plSPrMdrKZG">
+  <div class="userbar" id="userbar" style="display:none">
+    <span class="who" id="who"></span>
+    <span class="spacer"></span>
+    <span class="pill score" id="scorePill">积分 <b id="scoreVal">0</b></span>
+    <!-- 连对/错题等对错线索默认隐藏，避免学生从计数变化看出自己做错了 -->
+    <span class="pill streak" id="streakPill" style="display:none">连对 <b id="streakVal">0</b></span>
+    <button class="ghost" id="logout">退出</button>
+  </div>
+
+  <header data-page-node-id="QrQc17KiPoHZhly84SHxHN">
+    <div class="crumb" id="crumb" style="display:none" data-page-node-id="PAKXMXa8b2X5CKSgUiHi6Z">数学 · 随机抽题</div>
+    <h1 id="title" data-page-node-id="9KowVRuH2ke3LHTurbR9j4">随机抽题</h1>
+    <div class="sub" style="display:none" data-page-node-id="2Q0rIpTe7R0X2RWZp48HNR">题库来源：<b id="bankTitle" data-page-node-id="YPnBcbG8Q7iUxlAiNoLkD7">—</b> &nbsp;·&nbsp; 共 <b id="total" data-page-node-id="Dq9xziOkdM0s2G0uzqk9kw">0</b> 道题，不重复抽取</div>
+  </header>
+
+  <div class="toolbar" style="display:none" data-page-node-id="tYiZBDdH4TEqzqUyXsxsKF">
+    <button class="primary" id="draw" data-page-node-id="8nN9sIyMamQR0ihM0jhxGW">随机抽一道</button>
+    <button id="reset" data-page-node-id="W89qo2qJcAEJGlgkM18KZ2">重新开始</button>
+    <div class="spacer" data-page-node-id="ZFLxa4SSfNmFUdqSLo5z1q"></div>
+    <div class="stat" style="display:none" data-page-node-id="gpSYT5jmCXhSCiWC7aEDkc">已抽 <b id="done" data-page-node-id="c8VfyoZkdUMW2Rce4eri2q">0</b> / <span id="total2" data-page-node-id="8BDCP7Rl6YTgzCkP8THrWz">0</span></div>
+  </div>
+
+  <div class="card" id="card" data-page-node-id="aZxWYF9W776RddJ73hDZGc"></div>
+
+  <details class="panel" id="panel" style="display:none" data-page-node-id="VbXm8iTruMU9hSZOSGxuqk">
+    <summary data-page-node-id="ENiN30hiF3qMXkHexJtpEZ">导入题库（粘贴文本或 JSON）</summary>
+    <div class="panel-body" data-page-node-id="TjFQESTJlJrfTH3HaHGazt">
+      <div class="hint" data-page-node-id="r3Rp0E1bt9FLZsVVo7UUe2">
+        支持两种格式：① 直接粘贴 <b data-page-node-id="5IFpMDOqvIUIKLv0GF1DJe">JSON 数组</b>；② 粘贴<b data-page-node-id="vEWHDRMZo1LZqMpjVGp2fz">纯文本</b>——按「1. / 1、/ （1）/ 第1题」自动切题，
+        「答案」「解析」「故选」开头的行自动拆成对应字段。导入后存本机浏览器，下次打开还在。
+      </div>
+      <textarea id="raw" placeholder="1. 如图，在△ABC中，DE∥BC，AD=2，DB=3，则DE:BC=____&#10;答案：2:5&#10;解析：由DE∥BC得△ADE∽△ABC…"></textarea>
+      <div class="row-btns" style="margin-top:12px" data-page-node-id="JfKOnjTyMlMmnNz3EU8Hbu">
+        <button class="primary" id="imp" data-page-node-id="pwdHwoXdxLRUJo6p2FCNZq">解析并导入</button>
+        <button id="exp" data-page-node-id="VI1VRBDFdjtPIUMjCLFSyg">导出 questions.js</button>
+        <button class="ghost" id="clr" data-page-node-id="JiOkAeq5KIHEeYET0xnkdU">恢复默认题库</button>
+        <span class="msg" id="msg" data-page-node-id="6APHapavRVRHqGIvUVTa3U"></span>
+      </div>
+    </div>
+  </details>
+
+  <div class="history" id="historyWrap" hidden style="display:none" data-page-node-id="XAfBhAVz0cp2Jm8TufgK4K">
+    <h2 data-page-node-id="IuRphdjl2bbRvZuH0kFinh">抽题记录</h2>
+    <div class="hist-list" id="histList" data-page-node-id="Hxt4gpalSVPdnqKYPEomeX"></div>
+  </div>
+
+  <footer data-page-node-id="giZ6wqtml6sRIn3hJHv8qf" style="display:none">按 <b data-page-node-id="FpdoDEN9GVKa5cQ1uAsfYA">空格</b> 抽题 · <b data-page-node-id="ED2HoGQGAlwQcgkc3CVJqv">A</b> 显示/隐藏答案 · 点击图片可放大看细节</footer>
+</div>
+
+<div id="lightbox"><img alt="放大图" /><span class="tip">点击任意处关闭</span></div>
+<div id="toast"></div>
+
+<script src="store.js"></script>
+<script src="questions.js"></script>
+<script src="import.js"></script>
+<script>
+/* ---------- 简易 LaTeX 兜底渲染 ---------- */
+/* ---------- 数学公式渲染：分数为横线分式，指数为上标 ---------- */
+function mathRender(s) {
+  s = String(s)
+    .replace(/\\triangle/g, "△").replace(/\\angle/g, "∠")
+    .replace(/\\parallel/g, "∥").replace(/\\perp/g, "⊥")
+    .replace(/\\cong/g, "≌").replace(/\\sim/g, "∽");
+  // 分式 \frac{a}{b}（分子分母支持一层嵌套，如 \frac{1}{x^{2}}），递归渲染内部
+  s = s.replace(/\\frac\{((?:[^{}]|\{[^{}]*\})*)\}\{((?:[^{}]|\{[^{}]*\})*)\}/g,
+    (m, a, b) => '<span class="mfrac"><span class="num">' + mathRender(a) + '</span><span class="den">' + mathRender(b) + '</span></span>');
+  // 指数 ^{...}（支持一层嵌套，如 x^{a^{2}﹣2a﹣6}），以及单字符指数 ^2
+  s = s.replace(/\^\{((?:[^{}]|\{[^{}]*\})*)\}/g, (m, e) => '<sup>' + mathRender(e) + '</sup>');
+  s = s.replace(/\^(\S)/g, (m, e) => '<sup>' + e + '</sup>');
+  // 下标 _{...}
+  s = s.replace(/_\{((?:[^{}]|\{[^{}]*\})*)\}/g, (m, e) => '<sub>' + mathRender(e) + '</sub>');
+  s = s.replace(/\\sqrt\{((?:[^{}]|\{[^{}]*\})*)\}/g, (m, t) => '√<span class="rad">' + mathRender(t) + '</span>');
+  return s.replace(/[{}]/g, "");
+}
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+function fmt(s) { return mathRender(esc(s)); }
+
+const $ = id => document.getElementById(id);
+const KEY = "similar-triangle-bank-v2";
+const VERSION = window.BANK_VERSION || "builtin";
+
+/* ---------- 页头信息 ---------- */
+(function () {
+  const m = window.BANK_META || {};
+  $("crumb").textContent = m.crumb || "数学 · 随机抽题";
+  $("title").textContent = m.title || "随机抽题";
+  $("bankTitle").textContent = m.source || "内置题库";
+})();
+
+/* ---------- 登录校验 / 学生档案 / 积分 ---------- */
+const GUEST = /[?&]guest=1/.test(location.search);
+const sess = (window.Store && Store.session()) || null;
+if (!GUEST && !sess) location.replace("login.html");
+if (window.Store) Store.weeklyReset();   // 跨过周五 24:00 则自动清零全部积分（须在读档案前执行）
+let me = (!GUEST && sess) ? Store.getUser(sess.cls, sess.name) : null;
+
+let toastTimer = null;
+function toast(text, kind) {
+  const t = $("toast");
+  if (!t) return;
+  t.textContent = text;
+  t.className = "";
+  void t.offsetWidth;
+  t.className = "on" + (kind ? " " + kind : "");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ""; }, 1600);
+}
+
+function refreshMe() {
+  const bar = $("userbar");
+  if (!me) { bar.style.display = "none"; return; }
+  bar.style.display = "flex";
+  $("who").innerHTML = esc(me.name) + '<small>' + esc(me.cls) + "</small>";
+  $("scoreVal").textContent = me.score;
+  $("streakVal").textContent = me.streak;
+  $("scorePill").classList.toggle("zero", me.score === 0);
+  $("scorePill").classList.remove("pop"); void $("scorePill").offsetWidth;
+  $("scorePill").classList.add("pop");
+}
+
+/* 答对：每题固定 1 分，连对计数只做展示；
+   同时把这道题从该同学的错题集里移除——这是清出错题集的唯一途径。 */
+function scoreRight(q) {
+  if (!me) return;
+  me.streak += 1;
+  me.score += 1;
+  me.right += 1;
+  if (me.streak > me.best) me.best = me.streak;
+  let cleared = false;
+  if (q && window.Store && Store.removeWrong) {
+    const before = (me.wrongItems || []).length;
+    Store.removeWrong(me, q.id);
+    cleared = (me.wrongItems || []).length < before;
+  }
+  Store.saveUser(me);
+  refreshMe();
+  toast("答对  +1 分" + (me.streak > 1 ? "（连对 " + me.streak + " 题）" : "") + (cleared ? " · 该题已清出错题集" : ""), "ok");
+}
+/* 答错：积分清零、连对归零，并把这道题记入错题集（累计次数由 Store.addWrong 统一负责）。
+   界面上不给任何提示（不标选项、不弹提示），学生看不到正确答案。 */
+function scoreWrong(q) {
+  if (!me) return;
+  me.score = 0;
+  me.streak = 0;
+  if (q && window.Store && Store.addWrong) Store.addWrong(me, q);
+  else me.wrong = (me.wrong || 0) + 1;
+  Store.saveUser(me);
+  refreshMe();
+}
+
+$("logout").onclick = () => {
+  Store.clearSession();
+  location.href = "login.html";
+};
+if (me) refreshMe();
+
+/* ---------- 题库：仅当本地缓存与当前题库版本一致时才覆盖 ---------- */
+/* 抽题范围：只抽选择题（填空题需要手写/小键盘作答，不参与随机抽取） */
+const pickable = q => q && q.stem && q.type !== "填空" && (q.options || []).length >= 2;
+let Q = (window.QUESTIONS || []).filter(pickable);
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY) || "null");
+  if (saved && saved.v === VERSION && Array.isArray(saved.list) && saved.list.length) {
+    const hit = saved.list.filter(pickable);
+    if (hit.length) Q = hit;
+  }
+} catch (e) {}
+
+const pool = [];
+const drawn = [];
+let current = null;
+let drawnIds = new Set();
+try {
+  const sd = JSON.parse(localStorage.getItem(KEY + ":drawn") || "[]");
+  if (Array.isArray(sd)) drawnIds = new Set(sd.map(String));
+} catch (e) {}
+function saveDrawn() { try { localStorage.setItem(KEY + ":drawn", JSON.stringify([...drawnIds])); } catch (e) {} }
+
+/* 选定答案 3 秒后自动抽下一题 */
+let autoTimer = null;
+function armAutoNext() {
+  clearTimeout(autoTimer);
+  autoTimer = setTimeout(() => { autoTimer = null; draw(); }, 3000);
+}
+function disarmAutoNext() { clearTimeout(autoTimer); autoTimer = null; }
+
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function refill() { pool.length = 0; shuffle(Q.slice()).forEach(x => pool.push(x)); }
+
+function figsHtml(list) {
+  if (!list || !list.length) return "";
+  return `<div class="figs">` + list.map((s, i) =>
+    `<span class="fig"><img src="${esc(s)}" alt="题图${i ? i + 1 : ""}"></span>`).join("") + `</div>`;
+}
+
+/* ---------- 填空题：按答案定制小键盘 ---------- */
+/* 把答案拆成"零部件"：分式、根号、带上下标的字母、数字、中文词、单个符号各成一块，去重 */
+function answerTokens(ans) {
+  let s = String(ans || "");
+  s = s.replace(/（答案不唯一[^）]*）/g, "").replace(/（[^）]*均可[^）]*）/g, "").trim();
+  const out = [];
+  const re = /\\frac\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}|\\sqrt\{[^{}]*\}|[a-zA-Z）)](?:_\{[^{}]*\})?(?:\^\{[^{}]*\})?|[0-9]+(?:\.[0-9]+)?|[\u4e00-\u9fff]+|[\s\S]/g;
+  let m;
+  while ((m = re.exec(s)) !== null) {
+    const t = m[0];
+    if (!t || /^\s$/.test(t)) continue;
+    if (!out.includes(t)) out.push(t);
+  }
+  return out;
+}
+
+/* ---------- 选项乱序：每次抽到同一题，A/B/C/D 对应的内容都重新洗牌，防止背位置背答案 ---------- */
+const OPT_LETTERS = ["A", "B", "C", "D", "E", "F"];
+/* 去掉选项自带的字母前缀（A．/ A. / A、），只留正文 */
+function stripOpt(s) { return String(s || "").trim().replace(/^[A-F][.．、]\s*/, ""); }
+/* 返回 { items:[{k:新字母, letter:原字母, body|img}], ans:新答案字母 }；不改动题库原数据 */
+function shuffledView(q) {
+  const origAns = String(q.answer || "").trim().replace(/[^A-F]/g, "").charAt(0) || "";
+  const hasText = (q.options || []).some(o => stripOpt(o));     // 有真实文字 → 文字选项；否则用图片选项
+  const items = hasText
+    ? (q.options || []).map(o => ({ letter: o.trim().charAt(0), body: stripOpt(o) }))
+    : (q.optionImgs || []).map(o => ({ letter: o.label, img: o.img }));
+  if (items.length < 2) return { items: items, ans: origAns };
+  const order = shuffle(items.map((_, i) => i));                // 新位置 → 原索引
+  const mapped = order.map((oi, pos) => {
+    const it = items[oi];
+    it.k = OPT_LETTERS[pos] || OPT_LETTERS[OPT_LETTERS.length - 1];
+    return it;
+  });
+  const hit = origAns ? mapped.find(it => it.letter === origAns) : null;
+  return { items: mapped, ans: hit ? hit.k : "" };
+}
+
+function render(q) {
+  const card = $("card");
+  if (!q) {
+    card.innerHTML = `<div class="empty"><div class="big">📚</div>
+      <div>题库还是空的。</div>
+      <div style="margin-top:10px">展开下方「导入题库」，把题目粘进来即可。</div></div>`;
+    return;
+  }
+  const sv = shuffledView(q);                       // 本题本轮的乱序视图（含改写后的答案字母）
+  const ansLetter = sv.ans;
+  const opts = sv.items.length
+    ? `<div class="opts">${sv.items.map(it => {
+        const label = it.body !== undefined ? it.k + "．" + it.body : it.k + "．";
+        return `<div class="opt" data-k="${esc(it.k)}">${fmt(label)}</div>`;
+      }).join("")}</div>` : "";
+  const optImgHtml = (sv.items.length && sv.items[0].img !== undefined)
+    ? `<div class="optimgs">${sv.items.map(it =>
+        `<div class="optimg"><img src="${esc(it.img)}" alt="选项${esc(it.k)}"><span class="lb">${esc(it.k)}</span></div>`).join("")}</div>`
+    : "";
+  const stemImgs = (q.images || []).slice(0, 1);   // 只显示题图，解答配图默认隐藏
+  const isFill = !(q.options || []).length && !(q.optionImgs || []).length && /_{2,}/.test(q.stem || "");
+  let stemHtml;
+  if (q.hideStem) stemHtml = "";
+  else if (isFill) {
+    const parts = q.stem.split(/_{2,}/);
+    stemHtml = `<div class="stem">${fmt(parts[0])}<span class="blank" id="blankSlot"></span><span class="blank-hint">点击横线作答</span>${fmt(parts.slice(1).join("____"))}</div>`;
+  } else stemHtml = `<div class="stem">${fmt(q.stem)}</div>`;
+  card.innerHTML = `
+    <div class="tags">
+      ${q.type ? `<span class="tag">${esc(q.type)}</span>` : ""}
+      ${q.level && !q.hideLevel ? `<span class="tag level-${esc(q.level)}">${esc(q.level)}</span>` : ""}
+      ${q.source && !q.hideSource ? `<span class="tag src">${esc(q.source)}</span>` : ""}
+    </div>
+    ${stemHtml}
+    ${figsHtml(stemImgs)}
+    ${isFill ? `<div class="pad" id="pad" hidden></div>` : ""}
+    ${optImgHtml}
+    ${opts}
+    ${q.hideAnswer ? "" : `
+    <details class="reveal" id="rev">
+      <summary>查看参考答案与解析</summary>
+      <div class="ans-box">
+        ${q.answer ? `<div class="row"><div class="k">答案</div><div class="v strong">${fmt(q.answer)}</div></div>` : ""}
+        ${q.analysis ? `<div class="row"><div class="k">解析</div><div class="v">${fmt(q.analysis)}</div></div>` : ""}
+        ${!q.answer && !q.analysis ? `<div class="v" style="color:var(--ink-3)">（该来源未提供答案）</div>` : ""}
+      </div>
+    </details>`}`;
+  const stemEl = card.querySelector(".stem");
+  let answered = false;
+  card.querySelectorAll(".opt").forEach(el => {
+    el.onclick = () => {
+      if (answered) return;
+      answered = true;
+      const k = el.dataset.k;
+      if (stemEl && /（[\s\u3000]*）/.test(q.stem || "")) {
+        stemEl.innerHTML = fmt((q.stem || "").replace(/（[\s\u3000]*）/, "（" + k + "）"));
+      }
+      card.querySelectorAll(".opt").forEach(x => x.classList.add("lock"));
+      el.classList.add("sel");   // 点击反馈：不管对错都高亮（颜色不区分对错，不泄露正确答案）
+      if (!ansLetter) { armAutoNext(); return; }                            // 该题无答案，只做标记不计分
+      if (k === ansLetter) scoreRight(q);
+      else scoreWrong(q);        // 答错：同样只显示选中色，不标出正确选项
+      armAutoNext();
+    };
+  });
+  /* 填空题：点横线弹出按答案定制的小键盘 */
+  if (isFill) {
+    const blank = $("blankSlot"), pad = $("pad");
+    const tokens = answerTokens(q.answer);
+    const display = shuffle(tokens.slice());          // 打乱顺序，不按答案原序摆放
+    let composed = [];
+    const paint = () => { blank.innerHTML = composed.length ? fmt(composed.join("")) : ""; };
+    const norm = s => String(s).replace(/\s+/g, "");
+    function judge() {
+      if (answered) return;
+      answered = true;
+      pad.classList.add("locked");
+      blank.classList.add("sel");   // 提交反馈：不管对错都是同一个颜色，不泄露对错
+      if (norm(composed.join("")) === norm(q.answer)) scoreRight(q);
+      else scoreWrong(q);           // 答错：不标红、不显示正确答案
+      armAutoNext();
+    }
+    blank.onclick = () => {
+      if (answered) return;
+      pad.hidden = !pad.hidden;
+      if (!pad.childElementCount) {
+        pad.innerHTML = display.map(t => `<button class="tk" data-t="${esc(t)}">${fmt(t)}</button>`).join("") +
+          `<button class="tk fn" data-fn="del">⌫ 删除</button><button class="tk fn" data-fn="clr">清空</button><button class="tk go" data-fn="ok">确定</button>`;
+        pad.querySelectorAll(".tk").forEach(b => {
+          b.onclick = () => {
+            if (answered) return;
+            if (b.dataset.fn === "del") composed.pop();
+            else if (b.dataset.fn === "clr") composed.length = 0;
+            else if (b.dataset.fn === "ok") { judge(); return; }
+            else composed.push(b.dataset.t);
+            paint();
+          };
+        });
+      }
+    };
+  }
+  card.classList.remove("flip"); void card.offsetWidth; card.classList.add("flip");
+}
+
+/* ---------- 抽题：错题集中的题目抽中概率加大（做对清出错题后权重自动还原） ---------- */
+const WRONG_WEIGHT = 4;                 // 错题相对普通题的权重倍数（普通题 = 1）
+function wrongIdSet() {
+  const ws = (me && Array.isArray(me.wrongItems)) ? me.wrongItems : [];
+  return new Set(ws.map(w => String(w.id)));
+}
+/* 按权重随机取出一道（取出后从池中移除） */
+function pickWeighted(arr, wrongIds) {
+  if (!arr.length) return null;
+  let total = 0;
+  const weights = arr.map(q => { const w = wrongIds.has(String(q.id)) ? WRONG_WEIGHT : 1; total += w; return w; });
+  let r = Math.random() * total;
+  for (let i = 0; i < arr.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return arr.splice(i, 1)[0];
+  }
+  return arr.pop();
+}
+
+function draw() {
+  disarmAutoNext();
+  if (!Q.length) { render(null); return; }
+  if (!pool.length) refill();
+  const wrongIds = wrongIdSet();                 // 每次抽题前按最新错题集取权重
+  let q = pickWeighted(pool, wrongIds);
+  let guard = Q.length * 3 + 4;
+  while (q && drawnIds.has(String(q.id)) && guard-- > 0) {
+    if (!pool.length) refill();
+    q = pickWeighted(pool, wrongIds);
+  }
+  if (!q || drawnIds.has(String(q.id))) {
+    refill(); drawnIds.clear(); drawn.length = 0;   // 一轮全部抽完，开启新一轮
+    q = pickWeighted(pool, wrongIds);
+  }
+  drawnIds.add(String(q.id));
+  saveDrawn();
+  current = q;
+  drawn.unshift(q);
+  render(q); renderHistory(); updateStat();
+}
+
+function renderHistory() {
+  const wrap = $("historyWrap"), list = $("histList");
+  if (!drawn.length) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  list.innerHTML = drawn.slice(0, 30).map((q, i) => {
+    const s = (q.stem || "").replace(/\s+/g, " ");
+    return `<span class="chip${i === 0 ? " now" : ""}" data-id="${q.id}">${esc(s.slice(0, 18) + (s.length > 18 ? "…" : ""))}</span>`;
+  }).join("");
+  list.querySelectorAll(".chip").forEach(c => c.onclick = () => {
+    const q = Q.find(x => String(x.id) === String(c.dataset.id));
+    if (q) render(q);
+  });
+}
+
+function updateStat() {
+  $("done").textContent = drawn.length;
+  $("total").textContent = Q.length;
+  $("total2").textContent = Q.length;
+}
+
+function reload(list, persist) {
+  Q = list.filter(pickable);
+  refill(); drawn.length = 0; drawnIds.clear(); saveDrawn(); current = null;
+  renderHistory(); updateStat();
+  if (Q.length) draw(); else render(null);
+  if (persist) { try { localStorage.setItem(KEY, JSON.stringify({ v: VERSION, list: Q })); } catch (e) {} }
+}
+
+/* ---------- 导入 / 导出 ---------- */
+$("imp").onclick = () => {
+  const list = window.parseQuestions($("raw").value);
+  if (!list.length) { $("msg").style.color = "#dc2626"; $("msg").textContent = "没解析出题目，检查下编号格式"; return; }
+  reload(list, true);
+  $("msg").style.color = "#059669";
+  $("msg").textContent = "已导入 " + list.length + " 道题";
+  $("raw").value = "";
+};
+$("exp").onclick = () => {
+  const txt = "/** 题库（导出于 " + new Date().toLocaleString() + "） */\n"
+    + "window.BANK_VERSION = " + JSON.stringify(VERSION) + ";\n"
+    + "window.QUESTIONS = " + JSON.stringify(Q, null, 2) + ";\n";
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([txt], { type: "text/javascript" }));
+  a.download = "questions.js"; a.click();
+  URL.revokeObjectURL(a.href);
+};
+$("clr").onclick = () => {
+  localStorage.removeItem(KEY);
+  reload((window.QUESTIONS || []).filter(q => q && q.stem), false);
+  $("msg").textContent = "已恢复默认题库";
+};
+
+$("draw").onclick = draw;
+$("reset").onclick = () => { disarmAutoNext(); refill(); drawn.length = 0; drawnIds.clear(); saveDrawn(); current = null; renderHistory(); updateStat(); render(null); };
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+  if (e.code === "Space") { e.preventDefault(); draw(); }
+  if (e.key === "a" || e.key === "A") { const d = $("rev"); if (d) d.open = !d.open; }
+});
+
+/* ---------- 点击图片放大 ---------- */
+const lb = $("lightbox");
+document.addEventListener("click", e => {
+  const img = e.target.closest(".figs img, .optimgs img");
+  if (img) { lb.querySelector("img").src = img.src; lb.classList.add("on"); return; }
+  if (e.target.closest("#lightbox")) lb.classList.remove("on");
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") lb.classList.remove("on"); });
+
+refill(); updateStat();
+if (Q.length) draw(); else render(null);
+</script>
+</body>
+</html>
