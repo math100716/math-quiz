@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="9oP4KcpTAUlbnBXqICjCd4">
+<head data-page-node-id="Em4ejhqFeaFyUFJS1xC84G">
+<meta charset="UTF-8" data-page-node-id="huYoLDZhFgvCBlBKK9rzPx" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="0iglss0GYHdftQm4ROyN0X" />
+<title>登录 · 二次函数考点挑战</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --ink: #1f2937;
+    --ink-2: #4b5563;
+    --ink-3: #9ca3af;
+    --line: #e5e7eb;
+    --brand: #2563eb;
+    --brand-soft: #eff6ff;
+    --green: #059669;
+    --amber: #d97706;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink); min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.7; -webkit-font-smoothing: antialiased;
+    display: flex; align-items: center; justify-content: center; padding: 40px 20px;
+  }
+  .wrap { width: 100%; max-width: 960px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: 22px; align-items: start; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 28px 26px; }
+  h1 { font-size: 22px; margin: 0 0 4px; font-weight: 650; letter-spacing: -.01em; }
+  .sub { color: var(--ink-2); font-size: 13.5px; margin-bottom: 22px; }
+
+  label { display: block; font-size: 13px; color: var(--ink-2); margin: 14px 0 6px; font-weight: 600; }
+  input, select {
+    width: 100%; font: inherit; font-size: 15px; padding: 11px 13px;
+    border: 1px solid var(--line); border-radius: 10px; background: #fcfcfd; color: var(--ink);
+  }
+  input:focus, select:focus { outline: none; border-color: var(--brand); background: #fff; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  button {
+    font: inherit; cursor: pointer; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--card); color: var(--ink); padding: 11px 18px; font-size: 15px; transition: .15s ease;
+  }
+  button:hover { border-color: #cbd5e1; }
+  button.primary {
+    width: 100%; margin-top: 22px; background: var(--brand); border-color: var(--brand);
+    color: #fff; font-weight: 600;
+  }
+  button.primary:hover { background: #1d4ed8; }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  .msg { font-size: 13px; color: #dc2626; min-height: 20px; margin-top: 10px; }
+
+  .rules { margin-top: 20px; padding-top: 18px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--ink-2); }
+  .rules b { color: var(--ink); }
+  .rules ul { margin: 8px 0 0; padding-left: 18px; }
+  .rules li { margin: 3px 0; }
+
+  .board-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .board-head h2 { font-size: 18px; margin: 0; font-weight: 650; }
+  .board-head .n { font-size: 12.5px; color: var(--ink-3); }
+  .spacer { flex: 1; }
+  .mini {
+    font-size: 12.5px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line);
+    background: #fff; color: var(--ink-3); cursor: pointer;
+  }
+  .mini:hover { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
+
+  .rows { margin-top: 12px; }
+  .rowp {
+    display: grid; grid-template-columns: 44px minmax(0, 1.4fr) 64px 74px 78px 74px;
+    gap: 8px; align-items: center; padding: 11px 10px; border-bottom: 1px solid #f1f5f9; font-size: 14px;
+  }
+  .rowp.head { font-size: 12px; color: var(--ink-3); border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  .rowp .rk { font-weight: 700; color: var(--ink-3); text-align: center; font-variant-numeric: tabular-nums; }
+  .rowp .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rowp .cl { font-size: 12px; color: var(--ink-3); font-weight: 400; margin-left: 6px; }
+  .rowp .sc { font-weight: 700; color: var(--brand); text-align: right; font-variant-numeric: tabular-nums; }
+  .rowp .num { text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .rowp.me { background: var(--brand-soft); border-radius: 10px; border-bottom-color: transparent; }
+  .wlink {
+    color: var(--brand); font-weight: 700; cursor: pointer;
+    text-decoration: underline dotted; text-underline-offset: 3px;
+    padding: 2px 6px; border-radius: 6px;
+  }
+  .wlink:hover { background: var(--brand-soft); text-decoration-style: solid; }
+  .wlink.none { color: var(--ink-3); font-weight: 400; text-decoration: none; }
+  .rowp.top1 .rk { color: #d97706; }
+  .rowp.top2 .rk { color: #6b7280; }
+  .rowp.top3 .rk { color: #b45309; }
+  .empty { padding: 30px 10px; text-align: center; color: var(--ink-3); font-size: 13.5px; }
+
+  /* ---------- 开始答题前：学生信息确认对话框 ---------- */
+  .mask {
+    position: fixed; inset: 0; z-index: 500; display: none;
+    background: rgba(15,23,42,.45); align-items: center; justify-content: center; padding: 24px;
+  }
+  .mask.on { display: flex; }
+  .modal {
+    width: min(100%, 390px); background: #fff; border-radius: 16px; padding: 24px 24px 20px;
+    box-shadow: 0 18px 50px rgba(15,23,42,.22); animation: mpop .2s ease;
+  }
+  @keyframes mpop { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+  .modal .mt { font-size: 18px; font-weight: 650; }
+  .modal .ms { font-size: 13px; color: var(--ink-3); margin: 2px 0 10px; }
+  .modal .line {
+    display: flex; align-items: baseline; gap: 10px; padding: 10px 0;
+    border-bottom: 1px dashed var(--line); font-size: 16px;
+  }
+  .modal .line:last-of-type { border-bottom: 0; }
+  .modal .k { flex: 0 0 52px; font-size: 13px; color: var(--ink-3); }
+  .modal .v { font-weight: 700; }
+  .mf { display: flex; gap: 10px; margin-top: 14px; }
+  .mf button { flex: 1; }
+  .mf .ok { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 600; }
+  .mf .ok:hover { background: #1d4ed8; border-color: #1d4ed8; }
+</style>
+</head>
+<body data-page-node-id="Aq52oYNFisiu9H4DYNdSsA">
+<div class="wrap" data-page-node-id="4zoAWki1PuEO0VwuJKlsMz">
+  <div class="grid" data-page-node-id="nyf6cV1Qvm1eaTHSUbI3Xe">
+
+    <div class="card" data-page-node-id="opYHyC0wFFf4kQ6Lz9um2o">
+      <h1 data-page-node-id="LORfql1AN2Um9bNR7PbMYD">二次函数考点挑战</h1>
+      <div class="sub" data-page-node-id="kYvFFLozdPU6qXdWSBy8sp">选择年级、班级并填写姓名后开始答题，成绩记入右方排行榜。</div>
+
+      <div class="two" data-page-node-id="RcpMo2imr8AG07jQs5lxdR">
+        <div>
+          <label for="grade">年级</label>
+          <select id="grade">
+            <option value="七年级">七年级</option>
+            <option value="八年级">八年级</option>
+            <option value="九年级" selected>九年级</option>
+          </select>
+        </div>
+        <div>
+          <label for="cls">班级</label>
+          <select id="cls">
+            <option value="1班" selected>1班</option>
+            <option value="2班">2班</option>
+            <option value="其他班">其他班</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="name" data-page-node-id="5zOwxkg0feccQgd378ERyu">姓名</label>
+      <input id="name" placeholder="请输入你的姓名" autocomplete="off" data-page-node-id="q1Qpa47uVJzLq2IKX1JdA2" />
+
+      <button class="primary" id="go" data-page-node-id="R7zRqWycn92IExptPcV7n1">开始答题</button>
+      <div class="msg" id="msg" data-page-node-id="Ta47mR0AYRLl89QD2YMC4q"></div>
+
+      <div class="rules" data-page-node-id="yeQLqy9br1ZggiGDR7vkk4">
+        <b data-page-node-id="6sCHrWPhiM4TNEbzWYJJXA">积分规则</b>
+        <ul data-page-node-id="APsOHB9kcmQ4rENdplZsT9">
+          <li data-page-node-id="SrCDsmpomM6TXbOCxVWL2E">每答对 1 道题得 <b data-page-node-id="DrtUskJV4dI6fbH0CDNkIk">1 分</b></li>
+          <li data-page-node-id="o6bvoAc0mxW9Am3JmyPwkX">答错任何一道，<b data-page-node-id="539Gnhoh5PyvW27840iHBu">积分全部清零</b>，从 0 分重新开始积累</li>
+          <li>做错的题会自动记入<b>错题集</b>：点排行榜里「错题累计」的数字即可查看某位同学的错题</li>
+          <li>错题要清出错题集，<b>唯一的办法</b>是下次抽到这道题时把它<b>做对</b></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" data-page-node-id="3bkQrl2cZlg64iEWinbisU">
+      <div class="board-head" data-page-node-id="VDoEaCiu7g2OVZLBEykhah">
+        <h2 data-page-node-id="nHthWjCREAsRrCqODGFGXl">积分排行榜</h2>
+        <span class="n" id="cnt" data-page-node-id="pUbKGrEPv5HBzlF8CDnTuz"></span>
+        <span class="spacer" data-page-node-id="maEmfFs3zDrAbFM2dwoyYp"></span>
+        <button class="mini" id="clear" style="display:none" data-page-node-id="IomYWIkLa94hgMRF0NfKuG">清空排行榜</button>
+      </div>
+      <div class="rows" id="rows" data-page-node-id="i8qeunRBkTbo54VASnhfkF"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 开始答题前：学生信息确认 -->
+<div class="mask" id="confirm">
+  <div class="modal">
+    <div class="mt">请确认你的信息</div>
+    <div class="ms">信息正确就点「确定」开始答题，不正确点「信息有误」返回修改。</div>
+    <div class="line"><span class="k">年级</span><span class="v" id="cfGrade"></span></div>
+    <div class="line"><span class="k">班级</span><span class="v" id="cfCls"></span></div>
+    <div class="line"><span class="k">姓名</span><span class="v" id="cfName"></span></div>
+    <div class="mf">
+      <button id="cfNo">信息有误</button>
+      <button class="ok" id="cfYes">确定</button>
+    </div>
+  </div>
+</div>
+
+<script src="store.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+
+function renderBoard() {
+  const all = Store.list();
+  $("cnt").textContent = all.length ? "共 " + all.length + " 人" : "";
+  const me = Store.session();
+  const meKey = me ? me.cls + "|" + me.name : "";
+
+  if (!all.length) {
+    $("rows").innerHTML = '<div class="empty">还没有人答题，快来抢第一。</div>';
+    return;
+  }
+  const head = `<div class="rowp head">
+      <div class="rk">名次</div><div>姓名</div>
+      <div class="num">积分</div><div class="num">错题累计</div>
+      <div class="num">最高连对</div><div class="num">正确率</div>
+    </div>`;
+  const body = all.map((u, i) => {
+    const total = u.right + u.wrong;
+    const rate = total ? Math.round(u.right / total * 100) + "%" : "—";
+    const isMe = (u.cls + "|" + u.name) === meKey;
+    const wq = "wrong.html?cls=" + encodeURIComponent(u.cls || "") + "&name=" + encodeURIComponent(u.name);
+    return `<div class="rowp${isMe ? " me" : ""}${i < 3 ? " top" + (i + 1) : ""}">
+      <div class="rk">${i + 1}</div>
+      <div class="nm">${esc(u.name)}<span class="cl">${esc(u.cls || "")}</span></div>
+      <div class="sc">${u.score}</div>
+      <div class="num"><a class="wlink${u.wrong ? "" : " none"}" href="${wq}" title="查看该同学的错题集">${u.wrong || 0}</a></div>
+      <div class="num">${u.best}</div>
+      <div class="num">${rate}</div>
+    </div>`;
+  }).join("");
+  $("rows").innerHTML = head + body;
+}
+function esc(s) {
+  return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+/* ---------- 开始答题：先弹「学生信息是否正确」确认框 ---------- */
+let pending = null;
+function closeConfirm() { $("confirm").classList.remove("on"); pending = null; }
+
+$("go").onclick = () => {
+  const grade = $("grade").value, cl = $("cls").value;
+  const name = $("name").value.trim();
+  if (!name) { $("msg").textContent = "请填写姓名"; $("name").focus(); return; }
+  $("msg").textContent = "";
+  /* 年级 + 班级组合成 "九年级·1班" 作为档案标识 */
+  pending = { grade: grade, cls: cl, name: name, key: grade + "·" + cl };
+  $("cfGrade").textContent = grade;
+  $("cfCls").textContent = cl;
+  $("cfName").textContent = name;
+  $("confirm").classList.add("on");
+  $("cfYes").focus();
+};
+
+/* 点「确定」→ 学生信息正确，进入答题 */
+$("cfYes").onclick = () => {
+  if (!pending) return;
+  const p = pending;
+  $("confirm").classList.remove("on");
+  try { localStorage.setItem("sq:lastLogin", JSON.stringify({ grade: p.grade, cls: p.cls, name: p.name })); } catch (e) {}
+  Store.getUser(p.key, p.name);        // 建/取档案
+  Store.setSession({ cls: p.key, name: p.name, at: Date.now() });
+  Store.resetDrawn();                  // 新登录 → 题目重新从一轮开始
+  location.href = "index.html";
+};
+
+/* 点「信息有误」→ 留在登录页重新填写 */
+$("cfNo").onclick = () => { closeConfirm(); $("name").focus(); };
+$("confirm").addEventListener("click", e => { if (e.target === $("confirm")) closeConfirm(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && $("confirm").classList.contains("on")) closeConfirm();
+});
+
+$("name").addEventListener("keydown", e => { if (e.key === "Enter") $("go").click(); });
+$("cls").addEventListener("keydown", e => { if (e.key === "Enter") $("name").focus(); });
+
+$("clear").onclick = () => {
+  if (!confirm("确定清空本机保存的所有学生积分记录？此操作不可撤销。")) return;
+  Store.clearAll();
+  renderBoard();
+};
+
+Store.weeklyReset();   // 跨过周五 24:00 则自动清零全部积分
+// 回填上次登录的年级/班级/姓名
+try {
+  const last = JSON.parse(localStorage.getItem("sq:lastLogin") || "null");
+  if (last) {
+    if (last.grade) $("grade").value = last.grade;
+    if (last.cls) $("cls").value = last.cls;
+    if (last.name) $("name").value = last.name;
+  }
+} catch (e) {}
+renderBoard();
+document.addEventListener("visibilitychange", () => { if (!document.hidden) renderBoard(); });
+window.addEventListener("storage", renderBoard);
+</script>
+</body>
+</html>
