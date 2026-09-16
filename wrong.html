@@ -1,252 +1,27 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-page-node-id="unUkK7OC4Hp9SLy9MKMvaz">
-<head data-page-node-id="2x9eY1PmjoWgt1YJsUjfsy">
-<meta charset="UTF-8" data-page-node-id="kGZSMvrLPTFPbW7qk3Hxks" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="DQBheTqD7yr9vc3UcZL1n6" />
-<title>错题集 · 二次函数考点挑战</title>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>正在跳转 · 二次函数考点挑战</title>
+<meta http-equiv="refresh" content="0;url=https://math100716-d4g85ttym7c04ee74-1489298887.tcloudbaseapp.com/">
 <style>
-  :root {
-    --bg: #f5f7fa; --card: #ffffff; --ink: #1f2937; --ink-2: #4b5563; --ink-3: #9ca3af;
-    --line: #e5e7eb; --brand: #2563eb; --brand-soft: #eff6ff;
-    --green: #059669; --green-soft: #ecfdf5;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    background: var(--bg); color: var(--ink); min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    line-height: 1.75; -webkit-font-smoothing: antialiased; padding: 28px 20px 60px;
-  }
-  .wrap { width: 100%; max-width: 900px; margin: 0 auto; }
-  a { color: var(--brand); }
-  button {
-    font: inherit; cursor: pointer; border-radius: 10px; border: 1px solid var(--line);
-    background: var(--card); color: var(--ink); padding: 8px 16px; font-size: 14px; transition: .15s ease;
-  }
-  button:hover { border-color: #cbd5e1; }
-  button.danger:hover { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
-  button.mini { font-size: 12.5px; padding: 4px 12px; border-radius: 999px; color: var(--ink-3); }
-  /* 「移出错题集」按钮隐藏（保留 DOM 与逻辑，需要时可去掉这行恢复） */
-  .q-head .rm { display: none; }
-
-  header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; padding: 4px 4px 18px; }
-  header h1 { font-size: 22px; margin: 0; font-weight: 650; letter-spacing: -.01em; }
-  header .who { font-size: 14px; color: var(--ink-2); font-weight: 600; }
-  header .who small { color: var(--ink-3); font-weight: 400; margin-left: 6px; }
-  header .spacer { flex: 1; }
-  .stats { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 4px 18px; }
-  .stat {
-    background: #fff; border: 1px solid var(--line); border-radius: 12px;
-    padding: 10px 16px; font-size: 13.5px; color: var(--ink-2);
-  }
-  .stat b { font-size: 18px; color: var(--brand); font-variant-numeric: tabular-nums; }
-  .stat.warn b { color: #dc2626; }
-
-  .q { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px; margin-bottom: 16px; }
-  .q-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-  .idx { font-size: 13px; font-weight: 700; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-  .tag { font-size: 12px; padding: 2px 10px; border-radius: 999px; background: #f3f4f6; color: var(--ink-2); border: 1px solid var(--line); }
-  .tag.times { background: #fef2f2; color: #dc2626; border-color: #fecaca; font-weight: 700; }
-  .spacer { flex: 1; }
-  .stem { font-size: 16.5px; white-space: pre-wrap; }
-  .opts { margin-top: 12px; display: grid; gap: 8px; }
-  .opt { padding: 9px 14px; border: 1px solid var(--line); border-radius: 10px; font-size: 15px; background: #fcfcfd; }
-  .opt.ok { border-color: #a7f3d0; background: var(--green-soft); color: var(--green); font-weight: 600; }
-  .figs { margin-top: 12px; display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
-  .figs img { max-width: min(100%, 320px); max-height: 230px; border: 0; border-radius: 0; background: transparent; cursor: zoom-in; }
-  .optimgs { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 10px; }
-  .optimg { position: relative; border: 1px solid var(--line); border-radius: 10px; background: #fff; padding: 6px 8px 4px; }
-  .optimg img { display: block; max-width: 200px; max-height: 150px; }
-  .optimg .lb { display: block; text-align: center; font-size: 12px; font-weight: 700; color: var(--ink-2); }
-  .ans-box { margin-top: 14px; border-top: 1px dashed var(--line); padding-top: 12px; display: grid; gap: 8px; }
-  .ans-box .k { display: inline-block; min-width: 46px; font-weight: 700; color: var(--ink-2); font-size: 14px; }
-  .ans-box .v { display: inline; font-size: 15px; }
-  .ans-box .v.strong { font-weight: 700; color: var(--green); }
-  /* 解析：保留原始换行，让每个「因为/所以」推理步骤各占一行 */
-  .ans-box .v.steps { display: block; white-space: pre-wrap; margin-top: 2px; }
-  .empty { background: var(--card); border: 1px dashed var(--line); border-radius: 16px; padding: 46px 20px; text-align: center; color: var(--ink-3); }
-  #lightbox {
-    position: fixed; inset: 0; display: none; background: rgba(17,24,39,.86);
-    align-items: center; justify-content: center; z-index: 50;
-  }
-  #lightbox.on { display: flex; }
-  #lightbox img { max-width: 96vw; max-height: 92vh; }
-  sup { font-size: .72em; }
-  sub { font-size: .72em; }
-  .mfrac { display: inline-flex; flex-direction: column; text-align: center; vertical-align: middle; margin: 0 3px; line-height: 1.25; }
-  .mfrac > span { display: block; padding: 0 5px; }
-  .mfrac > .num { border-bottom: 1.5px solid currentColor; }
-  .rad { border-top: 1.5px solid currentColor; padding: 0 2px; }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+         background:#f5f7fa; color:#1f2937;
+         font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; }
+  .box { background:#fff; padding:34px 40px; border-radius:16px; text-align:center;
+         box-shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px rgba(16,24,40,.06); max-width:90vw; }
+  h1 { font-size:18px; margin:0 0 10px; }
+  p { font-size:14px; color:#4b5563; margin:6px 0; }
+  a { color:#2563eb; font-weight:600; text-decoration:none; }
 </style>
 </head>
-<body data-page-node-id="z48pSlO2gKPdI34TZlOduK">
-<div class="wrap" data-page-node-id="JMvHMxYwUmjSgwIeTS2Eh1">
-  <header data-page-node-id="IQC4kpawxiD7eYq7SzYwIn">
-    <h1 data-page-node-id="KnW4lqnjL2p9Y3B14aW7kz">错题集</h1>
-    <span class="who" id="who" data-page-node-id="oMcfCYYTTtWOieXjBT5ea2"></span>
-    <span class="spacer" data-page-node-id="h10ZHG3ndtZWYkupui3nFo"></span>
-    <button id="back" data-page-node-id="8CGs5TFBepwUX8GnBNbYGz">返回排行榜</button>
-    <button class="danger" id="clearOne" style="display:none" data-page-node-id="71mfS1gJqydV0k2Rj4HUGE">清空该同学错题集</button>
-  </header>
-
-  <div class="stats" id="stats" data-page-node-id="Eai7ePBuF4FfYfmB3AGTW1"></div>
-  <div id="list" data-page-node-id="l2nLLYXDHCwTnHYxeGHDrf"></div>
+<body>
+<div class="box">
+  <h1>答题网站已迁移到新地址</h1>
+  <p>正在自动跳转，请稍候…</p>
+  <p>如果没有反应，请点这里：<a href="https://math100716-d4g85ttym7c04ee74-1489298887.tcloudbaseapp.com/">进入「二次函数考点挑战」</a></p>
 </div>
-
-<div id="lightbox" data-page-node-id="8mIM6Z2MZI94cFNAzrpkrS"><img alt="放大图" data-page-node-id="hsivsGXCM5pkXxStWDOWoK" /></div>
-
-<script src="https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.full.js"></script>
-<script src="cloud.js"></script>
-<script src="questions.js"></script>
-<script>
-const $ = id => document.getElementById(id);
-
-/* ---------- 公式渲染（与答题页一致） ---------- */
-function mathRender(s) {
-  s = String(s)
-    .replace(/\\triangle/g, "△").replace(/\\angle/g, "∠")
-    .replace(/\\parallel/g, "∥").replace(/\\perp/g, "⊥")
-    .replace(/\\cong/g, "≌").replace(/\\sim/g, "∽");
-  s = s.replace(/\\frac\{((?:[^{}]|\{[^{}]*\})*)\}\{((?:[^{}]|\{[^{}]*\})*)\}/g,
-    (m, a, b) => '<span class="mfrac"><span class="num">' + mathRender(a) + '</span><span class="den">' + mathRender(b) + '</span></span>');
-  s = s.replace(/\^\{((?:[^{}]|\{[^{}]*\})*)\}/g, (m, e) => '<sup>' + mathRender(e) + '</sup>');
-  s = s.replace(/\^(\S)/g, (m, e) => '<sup>' + e + '</sup>');
-  s = s.replace(/_\{((?:[^{}]|\{[^{}]*\})*)\}/g, (m, e) => '<sub>' + mathRender(e) + '</sub>');
-  s = s.replace(/\\sqrt\{((?:[^{}]|\{[^{}]*\})*)\}/g, (m, t) => '√<span class="rad">' + mathRender(t) + '</span>');
-  return s.replace(/[{}]/g, "");
-}
-function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
-function fmt(s) { return mathRender(esc(s)); }
-
-/* ---------- 解析排版：让每个「因为 / 所以 / ∵ / ∴」推理步骤尽量单独占一行 ---------- */
-function stepLines(s) {
-  s = String(s == null ? "" : s).replace(/\r\n?/g, "\n");
-  const MARK = /(因为|所以|∵|∴)/;
-  return s.split("\n").map(function (line) {
-    let idx = 0, res = "";
-    while (idx < line.length) {
-      const at = line.slice(idx).search(MARK);
-      if (at < 0) { res += line.slice(idx); break; }
-      const pos = idx + at;
-      const mk = line.slice(pos).match(MARK)[1];
-      const head = line.slice(idx, pos).replace(/\s+$/, "");   // 本行中该标记之前的内容
-      if (head.replace(/\s/g, "").length > 4) {
-        // 前面已有一句完整的话 → 从这里断行，让「因为/所以…」独立成行
-        res += head + "\n";
-      } else {
-        // 只是「解：」「又」「②」这类短引导词 → 保持同段，不硬拆
-        res += line.slice(idx, pos);
-      }
-      res += mk;                       // 标记本身保留
-      idx = pos + mk.length;           // 跳过标记继续往后找
-    }
-    return res;
-  }).join("\n");
-}
-
-/* ---------- 参数：uname = "年级·班级·姓名"（由排行榜链接生成） ---------- */
-const params = new URLSearchParams(location.search);
-const uname = params.get("uname") || "";
-const cls = params.get("cls") || "";
-const name = params.get("name") || "";
-
-if (!uname) {
-  $("list").innerHTML = '<div class="empty">缺少学生信息。<br>请从排行榜点击「错题累计」的数字进入。</div>';
-} else {
-  document.title = (name || "同学") + " 的错题集 · 二次函数考点挑战";
-  render();
-}
-
-let curUser = null;      // 云端档案（render 用）
-
-async function render() {
-  try {
-    const row = await Cloud.findByUsername(uname);
-    if (!row) { $("list").innerHTML = '<div class="empty">没有找到这位同学的档案。</div>'; return; }
-    curUser = Cloud.rowToUser(row);
-    const u = curUser;
-    const items = Array.isArray(u.wrongItems) ? u.wrongItems : [];
-    $("who").innerHTML = esc(name || u.name) + '<small>' + esc(cls || u.cls) + "</small>";
-    $("stats").innerHTML =
-      '<div class="stat warn">累计做错 <b>' + (u.wrong || 0) + '</b> 次</div>' +
-      '<div class="stat">错题 <b>' + items.length + '</b> 道</div>' +
-      '<div class="stat">积分 <b>' + (u.score || 0) + '</b></div>' +
-      '<div class="stat">正确率 <b>' +
-        ((u.right + u.wrong) ? Math.round(u.right / (u.right + u.wrong) * 100) + "%" : "—") + '</b></div>';
-
-    if (!items.length) {
-      $("list").innerHTML = '<div class="empty">这位同学暂时没有错题，继续保持 👏</div>';
-      return;
-    }
-    $("list").innerHTML = items.map((it, i) => {
-      const opts = (it.options || []).length
-        ? `<div class="opts">${it.options.map(o => {
-            const k = o.trim().charAt(0);
-            const isAns = (it.answer || "").trim().replace(/[^A-D]/g, "") === k;
-            return `<div class="opt${isAns ? " ok" : ""}">${fmt(o)}</div>`;
-          }).join("")}</div>` : "";
-      const optImgs = (it.optionImgs || []).length
-        ? `<div class="optimgs">${it.optionImgs.map(o =>
-            `<div class="optimg"><img src="${esc(o.img)}" alt="选项${esc(o.label)}"><span class="lb">${esc(o.label)}</span></div>`).join("")}</div>`
-        : "";
-      const figs = (it.images || []).length
-        ? `<div class="figs">${it.images.map(s => `<img src="${esc(s)}" alt="题图">`).join("")}</div>` : "";
-      return `<div class="q" data-id="${esc(String(it.id))}">
-      <div class="q-head">
-        <span class="idx">第 ${i + 1} 题</span>
-        ${it.type ? `<span class="tag">${esc(it.type)}</span>` : ""}
-        ${it.source ? `<span class="tag">${esc(it.source)}</span>` : ""}
-        ${it.times > 1 ? `<span class="tag times">错过 ${it.times} 次</span>` : ""}
-        <span class="spacer"></span>
-        <button class="mini rm" data-id="${esc(String(it.id))}">移出错题集</button>
-      </div>
-      <div class="stem">${fmt(it.stem)}</div>
-      ${figs}
-      ${optImgs}
-      ${opts}
-      ${(it.answer || it.analysis) ? `<div class="ans-box">
-        ${it.answer ? `<div><span class="k">答案</span><span class="v strong">${fmt(it.answer)}</span></div>` : ""}
-        ${it.analysis ? `<div><span class="k">解析</span><span class="v steps">${fmt(stepLines(it.analysis))}</span></div>` : ""}
-      </div>` : ""}
-    </div>`;
-    }).join("");
-
-    $("list").querySelectorAll(".rm").forEach(b => {
-      b.onclick = async () => {
-        Cloud.removeWrong(curUser, b.dataset.id);
-        Cloud.commit(curUser);          // 记录改动
-        await Cloud.flush();           // 立即写入云端
-        render();
-      };
-    });
-  } catch (e) {
-    $("list").innerHTML = '<div class="empty">云端档案加载失败，请稍后刷新重试。</div>';
-  }
-}
-
-$("back").onclick = () => { location.href = "login.html"; };
-$("clearOne").onclick = async () => {
-  if (!confirm("确定清空「" + (name || "该同学") + "」的全部错题记录？")) return;
-  if (!curUser) return;
-  Cloud.clearWrong(curUser);
-  Cloud.commit(curUser);
-  await Cloud.flush();
-  render();
-};
-
-/* 点图放大 */
-document.addEventListener("click", e => {
-  const img = e.target.closest("img");
-  const box = $("lightbox");
-  if (img && box && !box.classList.contains("on")) {
-    box.querySelector("img").src = img.src;
-    box.classList.add("on");
-    return;
-  }
-  if (box) box.classList.remove("on");
-});
-document.addEventListener("keydown", e => { if (e.key === "Escape") $("lightbox").classList.remove("on"); });
-</script>
+<script>location.replace("https://math100716-d4g85ttym7c04ee74-1489298887.tcloudbaseapp.com/");</script>
 </body>
 </html>
