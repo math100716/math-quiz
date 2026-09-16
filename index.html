@@ -295,7 +295,8 @@
 <div id="lightbox"><img alt="放大图" /><span class="tip">点击任意处关闭</span></div>
 <div id="toast"></div>
 
-<script src="store.js"></script>
+<script src="https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.full.js"></script>
+<script src="cloud.js"></script>
 <script src="questions.js"></script>
 <script src="import.js"></script>
 <script>
@@ -332,12 +333,22 @@ const VERSION = window.BANK_VERSION || "builtin";
   $("bankTitle").textContent = m.source || "内置题库";
 })();
 
-/* ---------- 登录校验 / 学生档案 / 积分 ---------- */
+/* ---------- 登录校验 / 学生档案 / 积分（云端） ---------- */
 const GUEST = /[?&]guest=1/.test(location.search);
-const sess = (window.Store && Store.session()) || null;
+const sess = Cloud.session();
 if (!GUEST && !sess) location.replace("login.html");
-if (window.Store) Store.weeklyReset();   // 跨过周五 24:00 则自动清零全部积分（须在读档案前执行）
-let me = (!GUEST && sess) ? Store.getUser(sess.cls, sess.name) : null;
+let me = null;                                  // 云端档案（异步加载，加载完成前答题不计分）
+(async function loadMe() {
+  if (GUEST || !sess) return;
+  try {
+    const row = await Cloud.getById(sess.id);
+    if (!row) { Cloud.clearSession(); location.replace("login.html"); return; }
+    const step = Cloud.applyWeekly(Cloud.rowToUser(row));
+    if (step.changed) Cloud.commit(step.user);  // 跨周首次进入：清零积分并写回云端
+    me = step.user;
+    refreshMe();
+  } catch (e) { /* 云端暂不可达：仍可答题，稍后计分恢复 */ }
+})();
 
 let toastTimer = null;
 function toast(text, kind) {
@@ -372,32 +383,33 @@ function scoreRight(q) {
   me.right += 1;
   if (me.streak > me.best) me.best = me.streak;
   let cleared = false;
-  if (q && window.Store && Store.removeWrong) {
+  if (q) {
     const before = (me.wrongItems || []).length;
-    Store.removeWrong(me, q.id);
+    Cloud.removeWrong(me, q.id);
     cleared = (me.wrongItems || []).length < before;
   }
-  Store.saveUser(me);
+  Cloud.commit(me);                    // 节流合并写云端
   refreshMe();
   toast("答对  +1 分" + (me.streak > 1 ? "（连对 " + me.streak + " 题）" : "") + (cleared ? " · 该题已清出错题集" : ""), "ok");
 }
-/* 答错：积分清零、连对归零，并把这道题记入错题集（累计次数由 Store.addWrong 统一负责）。
+/* 答错：积分清零、连对归零，并把这道题记入错题集（累计次数由 Cloud.addWrong 统一负责）。
    界面上不给任何提示（不标选项、不弹提示），学生看不到正确答案。 */
 function scoreWrong(q) {
   if (!me) return;
   me.score = 0;
   me.streak = 0;
-  if (q && window.Store && Store.addWrong) Store.addWrong(me, q);
+  if (q) Cloud.addWrong(me, q);
   else me.wrong = (me.wrong || 0) + 1;
-  Store.saveUser(me);
+  Cloud.commit(me);                    // 节流合并写云端
   refreshMe();
 }
 
 $("logout").onclick = () => {
-  Store.clearSession();
+  Cloud.flush();                       // 先把未写入的积分同步上去
+  Cloud.clearSession();
   location.href = "login.html";
 };
-if (me) refreshMe();
+window.addEventListener("pagehide", () => { Cloud.flush(); });   // 关页/切走前尽力同步
 
 /* ---------- 题库：仅当本地缓存与当前题库版本一致时才覆盖 ---------- */
 /* 抽题范围：只抽选择题（填空题需要手写/小键盘作答，不参与随机抽取） */
