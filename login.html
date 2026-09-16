@@ -149,12 +149,24 @@
       <label for="name" data-page-node-id="5zOwxkg0feccQgd378ERyu">姓名</label>
       <input id="name" placeholder="请输入你的姓名" autocomplete="off" data-page-node-id="q1Qpa47uVJzLq2IKX1JdA2" />
 
+      <label for="pwd">密码</label>
+      <input id="pwd" type="password" placeholder="请输入密码" autocomplete="off" />
+      <div id="pwd2Wrap" style="display:none">
+        <label for="pwd2">确认密码（再输一遍）</label>
+        <input id="pwd2" type="password" placeholder="再输入一遍密码" autocomplete="off" />
+      </div>
+
       <button class="primary" id="go" data-page-node-id="R7zRqWycn92IExptPcV7n1">开始答题</button>
       <div class="msg" id="msg" data-page-node-id="Ta47mR0AYRLl89QD2YMC4q"></div>
+      <div style="margin-top:10px;text-align:center;font-size:13.5px">
+        <span id="modeTip" style="color:var(--ink-3)">第一次用？</span>
+        <a href="javascript:void(0)" id="modeBtn" style="color:var(--brand);font-weight:600">注册一个账号</a>
+      </div>
 
       <div class="rules" data-page-node-id="yeQLqy9br1ZggiGDR7vkk4">
         <b data-page-node-id="6sCHrWPhiM4TNEbzWYJJXA">积分规则</b>
         <ul data-page-node-id="APsOHB9kcmQ4rENdplZsT9">
+          <li data-page-node-id="SrCDsmpomM6TXbOCxVWL2E">第一次使用请先<b>注册</b>（设置一个密码），以后凭密码登录</li>
           <li data-page-node-id="SrCDsmpomM6TXbOCxVWL2E">每答对 1 道题得 <b data-page-node-id="DrtUskJV4dI6fbH0CDNkIk">1 分</b></li>
           <li data-page-node-id="o6bvoAc0mxW9Am3JmyPwkX">答错任何一道，<b data-page-node-id="539Gnhoh5PyvW27840iHBu">积分全部清零</b>，从 0 分重新开始积累</li>
           <li>做错的题会自动记入<b>错题集</b>：点排行榜里「错题累计」的数字即可查看某位同学的错题</li>
@@ -184,6 +196,7 @@
     <div class="line"><span class="k">年级</span><span class="v" id="cfGrade"></span></div>
     <div class="line"><span class="k">班级</span><span class="v" id="cfCls"></span></div>
     <div class="line"><span class="k">姓名</span><span class="v" id="cfName"></span></div>
+    <div class="line"><span class="k">密码</span><span class="v" id="cfPwd">●●●●</span></div>
     <div class="mf">
       <button id="cfNo">信息有误</button>
       <button class="ok" id="cfYes">确定</button>
@@ -191,31 +204,47 @@
   </div>
 </div>
 
-<script src="store.js"></script>
+<script src="https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.full.js"></script>
+<script src="cloud.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 
-function renderBoard() {
-  const all = Store.list();
-  $("cnt").textContent = all.length ? "共 " + all.length + " 人" : "";
-  const me = Store.session();
-  const meKey = me ? me.cls + "|" + me.name : "";
+/* ---------- 登录 / 注册 双模式 ---------- */
+let regMode = false;
+$("modeBtn").onclick = () => {
+  regMode = !regMode;
+  $("pwd2Wrap").style.display = regMode ? "" : "none";
+  $("go").textContent = regMode ? "注册并开始答题" : "开始答题";
+  $("modeBtn").textContent = regMode ? "返回登录" : "注册一个账号";
+  $("modeTip").textContent = regMode ? "已经注册过？" : "第一次用？";
+  $("msg").textContent = "";
+  $("pwd").focus();
+};
 
-  if (!all.length) {
-    $("rows").innerHTML = '<div class="empty">还没有人答题，快来抢第一。</div>';
-    return;
-  }
-  const head = `<div class="rowp head">
-      <div class="rk">名次</div><div>姓名</div>
-      <div class="num">积分</div><div class="num">错题累计</div>
-      <div class="num">最高连对</div><div class="num">正确率</div>
-    </div>`;
-  const body = all.map((u, i) => {
-    const total = u.right + u.wrong;
-    const rate = total ? Math.round(u.right / total * 100) + "%" : "—";
-    const isMe = (u.cls + "|" + u.name) === meKey;
-    const wq = "wrong.html?cls=" + encodeURIComponent(u.cls || "") + "&name=" + encodeURIComponent(u.name);
-    return `<div class="rowp${isMe ? " me" : ""}${i < 3 ? " top" + (i + 1) : ""}">
+/* ---------- 排行榜（云端全班共享） ---------- */
+async function renderBoard() {
+  try {
+    const all = await Cloud.board();
+    $("cnt").textContent = all.length ? "共 " + all.length + " 人" : "";
+    const sess = Cloud.session();
+    const meName = sess ? sess.name + "|" + sess.cls : "";
+
+    if (!all.length) {
+      $("rows").innerHTML = '<div class="empty">还没有人答题，快来抢第一。</div>';
+      return;
+    }
+    const head = `<div class="rowp head">
+        <div class="rk">名次</div><div>姓名</div>
+        <div class="num">积分</div><div class="num">错题累计</div>
+        <div class="num">最高连对</div><div class="num">正确率</div>
+      </div>`;
+    const body = all.map((u, i) => {
+      const total = u.right + u.wrong;
+      const rate = total ? Math.round(u.right / total * 100) + "%" : "—";
+      const isMe = (u.name + "|" + u.cls) === meName;
+      const wq = "wrong.html?uname=" + encodeURIComponent(u.cls + "·" + u.name)
+               + "&cls=" + encodeURIComponent(u.cls || "") + "&name=" + encodeURIComponent(u.name || "");
+      return `<div class="rowp${isMe ? " me" : ""}${i < 3 ? " top" + (i + 1) : ""}">
       <div class="rk">${i + 1}</div>
       <div class="nm">${esc(u.name)}<span class="cl">${esc(u.cls || "")}</span></div>
       <div class="sc">${u.score}</div>
@@ -223,29 +252,57 @@ function renderBoard() {
       <div class="num">${u.best}</div>
       <div class="num">${rate}</div>
     </div>`;
-  }).join("");
-  $("rows").innerHTML = head + body;
+    }).join("");
+    $("rows").innerHTML = head + body;
+  } catch (e) {
+    $("rows").innerHTML = '<div class="empty">排行榜加载失败，请稍后刷新重试。</div>';
+  }
 }
 function esc(s) {
   return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-/* ---------- 开始答题：先弹「学生信息是否正确」确认框 ---------- */
+/* ---------- 提交：登录或注册 → 弹「学生信息确认」框 ---------- */
 let pending = null;
 function closeConfirm() { $("confirm").classList.remove("on"); pending = null; }
 
-$("go").onclick = () => {
+$("go").onclick = async () => {
   const grade = $("grade").value, cl = $("cls").value;
   const name = $("name").value.trim();
-  if (!name) { $("msg").textContent = "请填写姓名"; $("name").focus(); return; }
+  const pwd = $("pwd").value;
   $("msg").textContent = "";
-  /* 年级 + 班级组合成 "九年级·1班" 作为档案标识 */
-  pending = { grade: grade, cls: cl, name: name, key: grade + "·" + cl };
-  $("cfGrade").textContent = grade;
-  $("cfCls").textContent = cl;
-  $("cfName").textContent = name;
-  $("confirm").classList.add("on");
-  $("cfYes").focus();
+  if (!name) { $("msg").textContent = "请填写姓名"; $("name").focus(); return; }
+  if (!pwd) { $("msg").textContent = "请输入密码"; $("pwd").focus(); return; }
+  if (regMode) {
+    if (pwd.length < 4) { $("msg").textContent = "密码至少 4 位"; $("pwd").focus(); return; }
+    if (pwd !== $("pwd2").value) { $("msg").textContent = "两次输入的密码不一致"; $("pwd2").focus(); return; }
+  }
+  $("go").disabled = true;
+  try {
+    let r;
+    if (regMode) r = await Cloud.register(grade, cl, name, pwd);
+    else r = await Cloud.login(grade, cl, name, pwd);
+    if (!r.ok) {
+      const tips = {
+        registered: "这个名字已经注册过了——请点下方「注册一个账号」切换回登录，或换一个名字",
+        no_user: "该姓名还没注册——第一次使用请先点下方「注册一个账号」",
+        bad_password: "密码不正确，请重新输入"
+      };
+      $("msg").textContent = tips[r.error] || "操作失败，请稍后重试";
+      $("pwd").focus(); $("pwd").select();
+      return;
+    }
+    pending = { grade: grade, cls: cl, name: name, user: r.user };
+    $("cfGrade").textContent = grade;
+    $("cfCls").textContent = cl;
+    $("cfName").textContent = name;
+    $("confirm").classList.add("on");
+    $("cfYes").focus();
+  } catch (e) {
+    $("msg").textContent = "网络异常，请稍后重试";
+  } finally {
+    $("go").disabled = false;
+  }
 };
 
 /* 点「确定」→ 学生信息正确，进入答题 */
@@ -254,9 +311,7 @@ $("cfYes").onclick = () => {
   const p = pending;
   $("confirm").classList.remove("on");
   try { localStorage.setItem("sq:lastLogin", JSON.stringify({ grade: p.grade, cls: p.cls, name: p.name })); } catch (e) {}
-  Store.getUser(p.key, p.name);        // 建/取档案
-  Store.setSession({ cls: p.key, name: p.name, at: Date.now() });
-  Store.resetDrawn();                  // 新登录 → 题目重新从一轮开始
+  Cloud.setSession({ id: p.user.id, cls: p.grade + "·" + p.cls, name: p.name, at: Date.now() });
   location.href = "index.html";
 };
 
@@ -265,30 +320,20 @@ $("cfNo").onclick = () => { closeConfirm(); $("name").focus(); };
 $("confirm").addEventListener("click", e => { if (e.target === $("confirm")) closeConfirm(); });
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" && $("confirm").classList.contains("on")) closeConfirm();
+  if (e.key === "Enter" && !$("confirm").classList.contains("on")) $("go").click();
 });
 
-$("name").addEventListener("keydown", e => { if (e.key === "Enter") $("go").click(); });
-$("cls").addEventListener("keydown", e => { if (e.key === "Enter") $("name").focus(); });
-
-$("clear").onclick = () => {
-  if (!confirm("确定清空本机保存的所有学生积分记录？此操作不可撤销。")) return;
-  Store.clearAll();
-  renderBoard();
-};
-
-Store.weeklyReset();   // 跨过周五 24:00 则自动清零全部积分
-// 回填上次登录的年级/班级/姓名
+/* 回填上次登录的年级/班级/姓名（不回填密码） */
 try {
   const last = JSON.parse(localStorage.getItem("sq:lastLogin") || "null");
   if (last) {
     if (last.grade) $("grade").value = last.grade;
     if (last.cls) $("cls").value = last.cls;
-    if (last.name) $("name").value = last.name;
+    if (last.name) { $("name").value = last.name; $("pwd").focus(); }
   }
 } catch (e) {}
 renderBoard();
 document.addEventListener("visibilitychange", () => { if (!document.hidden) renderBoard(); });
-window.addEventListener("storage", renderBoard);
 </script>
 </body>
 </html>
