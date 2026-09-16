@@ -96,7 +96,8 @@
 
 <div id="lightbox" data-page-node-id="8mIM6Z2MZI94cFNAzrpkrS"><img alt="放大图" data-page-node-id="hsivsGXCM5pkXxStWDOWoK" /></div>
 
-<script src="store.js"></script>
+<script src="https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.full.js"></script>
+<script src="cloud.js"></script>
 <script src="questions.js"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -144,47 +145,54 @@ function stepLines(s) {
   }).join("\n");
 }
 
-/* ---------- 参数 ---------- */
+/* ---------- 参数：uname = "年级·班级·姓名"（由排行榜链接生成） ---------- */
 const params = new URLSearchParams(location.search);
+const uname = params.get("uname") || "";
 const cls = params.get("cls") || "";
 const name = params.get("name") || "";
 
-if (!name) {
+if (!uname) {
   $("list").innerHTML = '<div class="empty">缺少学生信息。<br>请从排行榜点击「错题累计」的数字进入。</div>';
 } else {
-  document.title = name + " 的错题集 · 二次函数考点挑战";
+  document.title = (name || "同学") + " 的错题集 · 二次函数考点挑战";
   render();
 }
 
-function render() {
-  const u = Store.getUser(cls, name);
-  const items = Array.isArray(u.wrongItems) ? u.wrongItems : [];
-  $("who").innerHTML = esc(name) + '<small>' + esc(cls) + "</small>";
-  $("stats").innerHTML =
-    '<div class="stat warn">累计做错 <b>' + (u.wrong || 0) + '</b> 次</div>' +
-    '<div class="stat">错题 <b>' + items.length + '</b> 道</div>' +
-    '<div class="stat">积分 <b>' + (u.score || 0) + '</b></div>' +
-    '<div class="stat">正确率 <b>' +
-      ((u.right + u.wrong) ? Math.round(u.right / (u.right + u.wrong) * 100) + "%" : "—") + '</b></div>';
+let curUser = null;      // 云端档案（render 用）
 
-  if (!items.length) {
-    $("list").innerHTML = '<div class="empty">这位同学暂时没有错题，继续保持 👏</div>';
-    return;
-  }
-  $("list").innerHTML = items.map((it, i) => {
-    const opts = (it.options || []).length
-      ? `<div class="opts">${it.options.map(o => {
-          const k = o.trim().charAt(0);
-          const isAns = (it.answer || "").trim().replace(/[^A-D]/g, "") === k;
-          return `<div class="opt${isAns ? " ok" : ""}">${fmt(o)}</div>`;
-        }).join("")}</div>` : "";
-    const optImgs = (it.optionImgs || []).length
-      ? `<div class="optimgs">${it.optionImgs.map(o =>
-          `<div class="optimg"><img src="${esc(o.img)}" alt="选项${esc(o.label)}"><span class="lb">${esc(o.label)}</span></div>`).join("")}</div>`
-      : "";
-    const figs = (it.images || []).length
-      ? `<div class="figs">${it.images.map(s => `<img src="${esc(s)}" alt="题图">`).join("")}</div>` : "";
-    return `<div class="q" data-id="${esc(String(it.id))}">
+async function render() {
+  try {
+    const row = await Cloud.findByUsername(uname);
+    if (!row) { $("list").innerHTML = '<div class="empty">没有找到这位同学的档案。</div>'; return; }
+    curUser = Cloud.rowToUser(row);
+    const u = curUser;
+    const items = Array.isArray(u.wrongItems) ? u.wrongItems : [];
+    $("who").innerHTML = esc(name || u.name) + '<small>' + esc(cls || u.cls) + "</small>";
+    $("stats").innerHTML =
+      '<div class="stat warn">累计做错 <b>' + (u.wrong || 0) + '</b> 次</div>' +
+      '<div class="stat">错题 <b>' + items.length + '</b> 道</div>' +
+      '<div class="stat">积分 <b>' + (u.score || 0) + '</b></div>' +
+      '<div class="stat">正确率 <b>' +
+        ((u.right + u.wrong) ? Math.round(u.right / (u.right + u.wrong) * 100) + "%" : "—") + '</b></div>';
+
+    if (!items.length) {
+      $("list").innerHTML = '<div class="empty">这位同学暂时没有错题，继续保持 👏</div>';
+      return;
+    }
+    $("list").innerHTML = items.map((it, i) => {
+      const opts = (it.options || []).length
+        ? `<div class="opts">${it.options.map(o => {
+            const k = o.trim().charAt(0);
+            const isAns = (it.answer || "").trim().replace(/[^A-D]/g, "") === k;
+            return `<div class="opt${isAns ? " ok" : ""}">${fmt(o)}</div>`;
+          }).join("")}</div>` : "";
+      const optImgs = (it.optionImgs || []).length
+        ? `<div class="optimgs">${it.optionImgs.map(o =>
+            `<div class="optimg"><img src="${esc(o.img)}" alt="选项${esc(o.label)}"><span class="lb">${esc(o.label)}</span></div>`).join("")}</div>`
+        : "";
+      const figs = (it.images || []).length
+        ? `<div class="figs">${it.images.map(s => `<img src="${esc(s)}" alt="题图">`).join("")}</div>` : "";
+      return `<div class="q" data-id="${esc(String(it.id))}">
       <div class="q-head">
         <span class="idx">第 ${i + 1} 题</span>
         ${it.type ? `<span class="tag">${esc(it.type)}</span>` : ""}
@@ -202,24 +210,28 @@ function render() {
         ${it.analysis ? `<div><span class="k">解析</span><span class="v steps">${fmt(stepLines(it.analysis))}</span></div>` : ""}
       </div>` : ""}
     </div>`;
-  }).join("");
+    }).join("");
 
-  $("list").querySelectorAll(".rm").forEach(b => {
-    b.onclick = () => {
-      const u2 = Store.getUser(cls, name);
-      Store.removeWrong(u2, b.dataset.id);
-      Store.saveUser(u2);
-      render();
-    };
-  });
+    $("list").querySelectorAll(".rm").forEach(b => {
+      b.onclick = async () => {
+        Cloud.removeWrong(curUser, b.dataset.id);
+        Cloud.commit(curUser);          // 记录改动
+        await Cloud.flush();           // 立即写入云端
+        render();
+      };
+    });
+  } catch (e) {
+    $("list").innerHTML = '<div class="empty">云端档案加载失败，请稍后刷新重试。</div>';
+  }
 }
 
 $("back").onclick = () => { location.href = "login.html"; };
-$("clearOne").onclick = () => {
-  if (!confirm("确定清空「" + name + "」的全部错题记录？")) return;
-  const u = Store.getUser(cls, name);
-  Store.clearWrong(u);
-  Store.saveUser(u);
+$("clearOne").onclick = async () => {
+  if (!confirm("确定清空「" + (name || "该同学") + "」的全部错题记录？")) return;
+  if (!curUser) return;
+  Cloud.clearWrong(curUser);
+  Cloud.commit(curUser);
+  await Cloud.flush();
   render();
 };
 
